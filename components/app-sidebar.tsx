@@ -33,7 +33,7 @@ const workflows = [
 export function AppSidebar() {
   return (
     <Sidebar variant="inset"  collapsible="icon">
-      <SidebarHeader className="flex-row items-center justify-between gap-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
+      <SidebarHeader className="flex-row items-center justify-between gap-2">
           <OrganizationSwitcher
             hidePersonal
             appearance={{
@@ -43,7 +43,7 @@ export function AppSidebar() {
               },
             }}
           />
-          <SidebarTrigger />
+          <SidebarTrigger className="group-data-[collapsible=icon]:mx-auto" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
