@@ -20,30 +20,29 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import type { Workflow as WorkflowType } from "@/lib/db/schema"
+import { generateSlug } from "@/features/workflows/lib/generate-slug"
 
-const workflows = [
-  "dominant-wasp",
-  "honest-reindeer",
-  "expected-llama",
-  "essential-ocelot",
-  "creepy-echidna",
-  "eastern-silkworm",
-  "cultural-lion",
-  "proud-weasel",
-  "regional-bonobo",
-]
+interface WorkflowNavProps {
+  workflows: WorkflowType[]
+  createWorkflowAction: (name: string) => Promise<void>
+}
 
-export function WorkflowNav() {
+export function WorkflowNav({
+  workflows,
+  createWorkflowAction,
+}: WorkflowNavProps) {
   const { state } = useSidebar()
-  const [activeWorkflow, setActiveWorkflow] = React.useState(workflows[0])
+  const [isPending, startTransition] = React.useTransition()
+
+  const handleCreateWorkflow = () => {
+    startTransition(async () => await createWorkflowAction(generateSlug()))
+  }
 
   const workflowItems = workflows.map((workflow) => (
-    <SidebarMenuItem key={workflow}>
-      <SidebarMenuButton
-        isActive={workflow === activeWorkflow}
-        onClick={() => setActiveWorkflow(workflow)}
-      >
-        <span>{workflow}</span>
+    <SidebarMenuItem key={workflow.id}>
+      <SidebarMenuButton>
+        <span>{workflow.name}</span>
       </SidebarMenuButton>
     </SidebarMenuItem>
   ))
@@ -63,7 +62,10 @@ export function WorkflowNav() {
               <PopoverContent side="right" align="start" className="w-56">
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton
+                      onClick={handleCreateWorkflow}
+                      disabled={isPending}
+                    >
                       <Plus />
                       <span>New workflow</span>
                     </SidebarMenuButton>
@@ -82,7 +84,11 @@ export function WorkflowNav() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Workflows</SidebarGroupLabel>
-      <SidebarGroupAction title="New workflow">
+      <SidebarGroupAction
+        title="New workflow"
+        onClick={handleCreateWorkflow}
+        disabled={isPending}
+      >
         <Plus />
         <span className="sr-only">New workflow</span>
       </SidebarGroupAction>

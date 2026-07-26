@@ -11,6 +11,6 @@ if (!process.env.DATABASE_URL) {
 // Route Handlers, Server Actions). Uses the pooled connection string.
 const sql = neon(process.env.DATABASE_URL);
 
-export const db = drizzle({ client: sql, schema });
+export const db = drizzle({ client: sql, schema,casing: "snake_case"});
 
 export * from "./schema";
