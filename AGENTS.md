@@ -34,10 +34,18 @@ a node.
 
 This project uses ReactFlow (React Flow / `@xyflow/react`) for the canvas. Its
 APIs, components, hooks, and props change across versions and may differ from
-your training data. Before writing or changing any ReactFlow code, fetch and
-consult the official LLM docs index at https://reactflow.dev/llms.txt and follow
-the linked pages relevant to what you're building. Do not rely on memory for
-component names, props, hook signatures, or usage patterns.
+your training data.
+
+**Mandatory, every time:** before writing or changing ANY ReactFlow code — a
+component, prop, hook, type, or usage pattern, no matter how small or how
+confident you feel — you MUST first fetch the official LLM docs index at
+https://reactflow.dev/llms.txt, then follow the linked pages relevant to what
+you're building and verify the exact API against them (or against the installed
+version's types under `node_modules/@xyflow/react`).
+
+Never rely on memory or training data for ReactFlow component names, props, hook
+signatures, types, or usage patterns. If you did not consult
+https://reactflow.dev/llms.txt for the change, do not write the ReactFlow code.
 
 # JSX text escaping
 
