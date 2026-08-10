@@ -1,25 +1,24 @@
 "use client"
 
-import { useCallback, useSyncExternalStore } from "react"
+import { useSyncExternalStore } from "react"
 
 import {
-  addEdge,
   Controls,
   ReactFlow,
   ConnectionLineType,
-  useEdgesState,
-  useNodesState,
   type ColorMode,
-  type Connection,
   type Edge,
   NodeTypes,
 } from "@xyflow/react"
+import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow"
 import { useTheme } from "next-themes"
 
 import { StepNode } from "@/features/workflows/components/step-node"
 import type { StepNodeType } from "@/features/workflows/nodes/node-registry"
 
 import "@xyflow/react/dist/style.css"
+import "@liveblocks/react-ui/styles.css";
+import "@liveblocks/react-flow/styles.css";
 
 const nodeTypes: NodeTypes = { step: StepNode }
 
@@ -49,17 +48,16 @@ function useMounted() {
 export function Canvas() {
   const { resolvedTheme } = useTheme()
   const mounted = useMounted()
-  const [nodes, , onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
+    useLiveblocksFlow<StepNodeType, Edge>({
+      suspense: true,
+      nodes: { initial: initialNodes },
+      edges: { initial: initialEdges },
+    })
 
   const colorMode: ColorMode = mounted
     ? (resolvedTheme as ColorMode) ?? "light"
     : "light"
-
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  )
 
   return (
     <div className="size-full">
@@ -70,6 +68,7 @@ export function Canvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onDelete={onDelete}
         colorMode={colorMode}
         fitView
         connectionLineType={ConnectionLineType.SmoothStep}
@@ -88,6 +87,7 @@ export function Canvas() {
         maxZoom={1}
       >
         <Controls />
+        <Cursors />
       </ReactFlow>
     </div>
   )
