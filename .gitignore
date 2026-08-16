@@ -42,3 +42,7 @@ next-env.d.ts
 /.clerk/
 
 .trigger
+
+# local agent tooling (not app code — excluded from build context)
+.agents/
+.claude/
