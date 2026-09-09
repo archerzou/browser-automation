@@ -8,6 +8,14 @@ export type NodeField = {
   key: string
   label: string
   placeholder?: string
+  // Render as a multi-line textarea instead of a single-line input.
+  multiline?: boolean
+  required?: boolean
+}
+
+export type NodeOutput = {
+  path: string
+  label: string
 }
 
 // A node type's manifest entry. Add a node by adding an entry to nodeRegistry.

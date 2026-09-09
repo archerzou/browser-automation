@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { auth as triggerAuth } from "@trigger.dev/sdk"
 import { notFound } from "next/navigation"
-
+import { ReactFlowProvider } from "@xyflow/react"
 import { liveblocks } from "@/lib/liveblocks"
 import { getWorkflow } from "@/features/workflows/data"
 import { WorkflowShell } from "@/features/workflows/components/workflow-shell"
@@ -36,7 +36,9 @@ export default async function WorkflowPage({
 
   return (
     <Room roomId={id}>
-     <WorkflowShell workflowId={id} />
+      <ReactFlowProvider>
+        <WorkflowShell workflowId={id} />
+      </ReactFlowProvider>
     </Room>
   )
 }
