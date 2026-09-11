@@ -5,9 +5,11 @@ import { runs, tasks } from "@trigger.dev/sdk"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-import type { helloWorldTask } from "@/trigger/example"
+import type { runWorkflowTask } from "@/features/workflows/tasks/run-workflow";
+
 import { liveblocks } from "@/lib/liveblocks"
-import { createWorkflow, deleteWorkflow } from "@/features/workflows/data"
+import { createWorkflow, deleteWorkflow, saveWorkflowGraph } from "@/features/workflows/data"
+import { WorkflowGraph } from "@/lib/db/schema"
 
 export async function createWorkflowAction(name: string) {
   const { orgId } = await auth()
@@ -43,21 +45,28 @@ export async function deleteWorkflowAction(id: string) {
 }
 
 
-export async function runWorkflowAction() {
+export async function runWorkflowAction({
+    id,
+    graph,
+  }: {
+  id: string
+  graph: WorkflowGraph
+}) {
   const { orgId } = await auth()
 
   if (!orgId) {
     throw new Error("No active organization")
   }
 
-  const handle = await tasks.trigger<typeof helloWorldTask>("hello-world", {
-    message: "Hello from my right-sidebar!",
-  })
+  await saveWorkflowGraph({ orgId, id, graph })
 
-  return {
-    runId: handle.id,
-    publicAccessToken: handle.publicAccessToken,
-  }
+  const handle = await tasks.trigger<typeof runWorkflowTask>(
+    "run-workflow",
+    { workflowId: id, orgId },
+    { tags: [`workflow:${id}`] }
+  )
+
+  return handle
 }
 
 

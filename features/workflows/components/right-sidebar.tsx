@@ -30,6 +30,7 @@ import {
   deleteWorkflowAction,
   runWorkflowAction,
 } from "@/features/workflows/actions"
+import { validateGraph } from "@/features/workflows/lib/validate-graph"
 
 import {
   nodeRegistry,
@@ -39,6 +40,7 @@ import {
   type StepNodeKind,
   type StepNodeType,
 } from "@/features/workflows/nodes/node-registry"
+
 
 // This file builds up to the RightSidebar component exported at the bottom: a
 // header with workflow actions (delete, run), then two tabs — a Toolbar for
@@ -311,19 +313,25 @@ function ActionsMenu({ workflowId }: { workflowId: string }) {
 function RunButton({ workflowId }: { workflowId: string }) {
   const { getNodes, getEdges } = useReactFlow<StepNodeType>()
   const [isPending, startTransition] = useTransition()
+  // const liveRun = useLiveRun()
+
   return (
     <Button
       size="sm"
       variant="secondary"
-      // onClick={() => {
-      //   startTransition(async () => {
-      //     try {
-      //       await cancelWorkflowRunAction(liveRun.id)
-      //     } catch {
-      //       toast.error("Couldn't stop the run.")
-      //     }
-      //   })
-      // }}
+      disabled={isPending}
+      onClick={() => {
+        const graph = { nodes: getNodes(), edges: getEdges() }
+        const problems = validateGraph(graph)
+        if (problems.length > 0) {
+          toast.error(problems[0])
+          return
+        }
+
+        startTransition(async () => {
+          await runWorkflowAction({ id: workflowId, graph })
+        })
+      }}
     >
       <Play fill="primary" />
       Run
